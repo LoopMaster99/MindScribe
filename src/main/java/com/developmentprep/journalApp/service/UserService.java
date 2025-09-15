@@ -4,8 +4,6 @@ import com.developmentprep.journalApp.entity.User;
 import com.developmentprep.journalApp.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -31,11 +29,7 @@ public class UserService {
             userRepository.save(user);
             return true;
         } catch (Exception e) {
-            log.error("hahahaaa");
-            log.warn("hahahahaa");
-            log.info("hahahahaa");
-            log.debug("hahahahaa");
-            log.trace("hahahahaa");
+            log.error("An error occured for {} :", user.getUserName(), e);
             return false;
         }
     }
