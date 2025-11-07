@@ -14,9 +14,9 @@ public class RedisTests {
 
     @Test
     void testSendMail(){
-        redisTemplate.opsForValue().set("email", "krishna@gmail.com");
+//        redisTemplate.opsForValue().set("email", "krishna@gmail.com");
 
-        Assertions.assertNotNull(redisTemplate.opsForValue().get("email"));
+        Assertions.assertNotNull(redisTemplate.opsForValue().get("salary"));
 
         int a = 1;
     }
