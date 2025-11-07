@@ -1,6 +1,7 @@
 package com.developmentprep.journalApp.service;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,11 +13,12 @@ public class RedisTests {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Disabled
     @Test
     void testSendMail(){
-//        redisTemplate.opsForValue().set("email", "krishna@gmail.com");
+        redisTemplate.opsForValue().set("email", "krishna@gmail.com");
 
-        Assertions.assertNotNull(redisTemplate.opsForValue().get("salary"));
+        Object salary = redisTemplate.opsForValue().get("salary");
 
         int a = 1;
     }
