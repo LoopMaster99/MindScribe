@@ -1,55 +1,102 @@
 # MindScribe: A Secure Journaling API
 
-**MindScribe** is a robust and secure backend service for a journaling application, built with Java and the Spring Boot framework. It provides a complete set of RESTful APIs for user management and CRUD operations on journal entries, secured with modern authentication practices.
+**MindScribe** is a robust and secure backend service for a journaling application, built with Java and Spring Boot. It provides RESTful APIs for user management, journal entry CRUD operations, sentiment analysis, and weather integration, all secured with JWT-based authentication.
 
 ## ✨ Features
 
-- **Secure User Authentication:** Implemented a robust authentication and authorization system using Spring Security and a custom UserDetailsService.
-- **User Management:** Endpoints for user registration, updates, and deletion.
-- **Full CRUD Functionality:** Create, Read, Update, and Delete operations for journal entries.
-- **RESTful API Design:** A well-structured API for easy integration with any frontend.
-- **Sentiment Analysis:** Weekly email summaries of the user's most frequent sentiment.
-- **Weather Integration:** Greeting endpoint that includes the current weather.
-- **Redis Caching:** Caching of weather data to improve performance.
-- **Configuration Management:** Environment-specific configurations using application properties.
-- **CI/CD Pipeline:** Automated build and testing pipeline using GitHub Actions.
+- **JWT Authentication**: Secure token-based authentication with configurable expiration
+- **User Management**: Registration, login, profile updates, and account deletion
+- **Journal Entry CRUD**: Full create, read, update, and delete operations for journal entries
+- **Sentiment Analysis**: Weekly email summaries based on user's most frequent sentiment
+- **Weather Integration**: Real-time weather data in user greetings
+- **Redis Caching**: Performance optimization through weather data caching
+- **Kafka Messaging**: Asynchronous sentiment email delivery via Kafka
+- **Health Monitoring**: Endpoint to check MongoDB and Redis connectivity
+- **Input Validation**: Jakarta validation for all user inputs
+- **Scheduled Tasks**: Automated weekly sentiment analysis and cache refresh
 
 ## 🛠️ Technologies Used
 
-- **Backend:** Java, Spring Boot
-- **Security:** Spring Security
-- **Database:** Spring Data, MongoDB
-- **Caching:** Redis
-- **Build Tool:** Apache Maven
-- **Testing:** JUnit 5, Mockito
-- **Code Quality:** SonarQube (for static analysis)
-- **CI/CD:** GitHub Actions
+- **Backend Framework**: Spring Boot 3.4.7, Java 17
+- **Security**: Spring Security with JWT (JSON Web Tokens)
+- **Database**: MongoDB with Spring Data MongoDB
+- **Caching**: Redis
+- **Messaging**: Apache Kafka
+- **Email**: Spring Mail (JavaMailSender)
+- **Build Tool**: Apache Maven
+- **Testing**: JUnit 5, Mockito
+- **Code Quality**: SonarQube, Lombok
+- **Authentication**: Custom UserDetailsService with BCrypt password encoding
+- **CI/CD**: GitHub Actions
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- Java JDK 17 or later
-- Apache Maven
-- A running instance of MongoDB
-- A running instance of Redis
+- **Java JDK 17** or later
+- **Apache Maven** 3.6+
+- **MongoDB** (running instance or MongoDB Atlas)
+- **Redis** (running instance)
+- **Apache Kafka** (optional, for sentiment emails)
+- **Weather API Key** from [WeatherStack](https://weatherstack.com/) or similar
 
 ### Installation & Setup
 
 1.  **Clone the repository:**
     ```sh
-    git clone https://github.com/your-username/journal-app
-    cd journal-app
+    git clone https://github.com/LoopMaster99/MindScribe.git
+    cd MindScribe
     ```
 
 2.  **Configure the application:**
-    Open `src/main/resources/application.properties` and update the MongoDB and Redis connection details, as well as the weather API key.
-    ```properties
-    spring.data.mongodb.uri=mongodb://localhost:27017/journal_db
-    spring.redis.host=localhost
-    spring.redis.port=6379
-    weather.api.key=your_weather_api_key
+    
+    Create `src/main/resources/application.yml` based on the provided template:
+    
+    ```yaml
+    # JWT Configuration (REQUIRED)
+    jwt:
+      secret: your-secret-key-must-be-at-least-32-characters-long
+      expiration: 3600000  # 1 hour in milliseconds
+    
+    # Weather API
+    weather:
+      api:
+        key: your_weather_api_key_here
+    
+    # MongoDB
+    spring:
+      data:
+        mongodb:
+          uri: mongodb://localhost:27017/journalDB
+      
+      # Redis
+      redis:
+        host: localhost
+        port: 6379
+      
+      # Mail Configuration
+      mail:
+        host: smtp.gmail.com
+        port: 587
+        username: your_email@gmail.com
+        password: your_app_password
+        properties:
+          mail:
+            smtp:
+              auth: true
+              starttls:
+                enable: true
+      
+      # Kafka
+      kafka:
+        bootstrap-servers: localhost:9092
+    
+    # Server
+    server:
+      port: 8080
     ```
+    
+    > **Note**: See `application.properties.example` for a complete configuration template.
 
 3.  **Build the project:**
     ```sh
@@ -57,22 +104,27 @@
     ```
 
 4.  **Run the application:**
-    The application will start on `http://localhost:8080`.
     ```sh
     mvn spring-boot:run
     ```
+    
+    The application will start on `http://localhost:8080`
 
 ## 🧪 Testing & Code Quality
 
-This project uses JUnit 5 and Mockito for unit testing and JaCoCo for measuring code coverage.
+This project uses JUnit 5 and Mockito for unit testing.
 
 1.  **Run the test suite:**
     ```sh
     mvn test
     ```
 
-2.  **View Coverage Report:**
-    After running the tests, the code coverage report can be found in `target/site/jacoco/index.html`.
+2.  **Run with coverage:**
+    ```sh
+    mvn clean test jacoco:report
+    ```
+    
+    View the coverage report at `target/site/jacoco/index.html`
 
 ## 🔧 Recent Code Improvements
 
@@ -110,24 +162,89 @@ The codebase has been enhanced with the following improvements for better securi
 
 ## 📄 API Endpoints
 
-The API is structured into public, user-specific, journal, and admin routes. Access to user and journal routes requires authentication.
+### Public Routes (No Authentication Required)
 
-| Method             | Endpoint                   | Description                                             |
-|:-------------------|:---------------------------|:--------------------------------------------------------|
-| **Public Routes**  |                            |                                                         |
-| `GET`              | `/public/health-check`     | Checks if the application is running.                   |
-| `POST`             | `/public/create-user`      | Registers a new standard user.                          |
-| **User Routes**    |                            |                                                         |
-| `GET`              | `/user`                    | Returns a greeting with the current weather.            |
-| `PUT`              | `/user`                    | Updates the authenticated user's username and password. |
-| `DELETE`           | `/user`                    | Deletes the authenticated user's account.               |
-| **Journal Routes** |                            |                                                         |
-| `GET`              | `/journal`                 | Gets all journal entries for the authenticated user.    |
-| `POST`             | `/journal`                 | Creates a new journal entry for the authenticated user. |
-| `GET`              | `/journal/id/{myId}`       | Gets a specific journal entry by its ID.                |
-| `PUT`              | `/journal/id/{id}`         | Updates a specific journal entry by its ID.             |
-| `DELETE`           | `/journal/id/{myId}`       | Deletes a specific journal entry by its ID.             |
-| **Admin Routes**   |                            |                                                         |
-| `GET`              | `/admin/all-users`         | Retrieves a list of all users in the system.            |
-| `POST`             | `/admin/create-admin-user` | Creates a new user with admin privileges.               |
-| `GET`              | `/admin/clear-app-cache`   | Clears the application cache.                           |
+| Method | Endpoint              | Description                                    |
+|:-------|:----------------------|:-----------------------------------------------|
+| `GET`  | `/public/health-check`| Simple health check - returns "Ok"             |
+| `POST` | `/public/signup`      | Register a new user                            |
+| `POST` | `/public/login`       | Login and receive JWT token                    |
+
+### User Routes (Authentication Required)
+
+| Method   | Endpoint | Description                                           |
+|:---------|:---------|:------------------------------------------------------|
+| `GET`    | `/user`  | Get greeting with current weather for user's location |
+| `PUT`    | `/user`  | Update authenticated user's profile                   |
+| `DELETE` | `/user`  | Delete authenticated user's account                   |
+
+### Journal Routes (Authentication Required)
+
+| Method   | Endpoint             | Description                                  |
+|:---------|:---------------------|:---------------------------------------------|
+| `GET`    | `/journal`           | Get all journal entries for authenticated user |
+| `POST`   | `/journal`           | Create a new journal entry                   |
+| `GET`    | `/journal/id/{myId}` | Get a specific journal entry by ID           |
+| `PUT`    | `/journal/id/{id}`   | Update a specific journal entry by ID        |
+| `DELETE` | `/journal/id/{myId}` | Delete a specific journal entry by ID        |
+
+### Admin Routes (Admin Role Required)
+
+| Method | Endpoint                   | Description                          |
+|:-------|:---------------------------|:-------------------------------------|
+| `GET`  | `/admin/all-users`         | Retrieve list of all users           |
+| `POST` | `/admin/create-admin-user` | Create a new user with admin role    |
+| `GET`  | `/admin/clear-app-cache`   | Clear application configuration cache |
+
+### Health & Monitoring
+
+| Method | Endpoint           | Description                                    |
+|:-------|:-------------------|:-----------------------------------------------|
+| `GET`  | `/actuator/health` | Check MongoDB and Redis connectivity status    |
+
+## 🔐 Authentication
+
+All authenticated endpoints require a JWT token in the Authorization header:
+
+```
+Authorization: Bearer <your-jwt-token>
+```
+
+To obtain a token:
+1. Register via `/public/signup`
+2. Login via `/public/login` to receive your JWT token
+3. Include the token in subsequent requests
+
+## 📦 Project Structure
+
+```
+src/main/java/com/developmentprep/journalApp/
+├── api/              # External API response models
+├── cache/            # Application caching logic
+├── config/           # Spring configuration (Security, Redis)
+├── constants/        # Application constants
+├── controller/       # REST API controllers
+├── entity/           # MongoDB entities (User, JournalEntry)
+├── enums/            # Enumerations (Sentiment)
+├── exception/        # Custom exceptions
+├── filter/           # JWT authentication filter
+├── model/            # Data transfer objects
+├── repository/       # MongoDB repositories
+├── scheduler/        # Scheduled tasks (sentiment analysis)
+├── service/          # Business logic layer
+└── utils/            # Utility classes (JWT)
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📝 License
+
+This project is open source and available under the MIT License.
+
+## 👤 Author
+
+**Krishna Bansal**
+- GitHub: [@LoopMaster99](https://github.com/LoopMaster99)
+- Repository: [MindScribe](https://github.com/LoopMaster99/MindScribe)
