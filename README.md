@@ -74,6 +74,40 @@ This project uses JUnit 5 and Mockito for unit testing and JaCoCo for measuring 
 2.  **View Coverage Report:**
     After running the tests, the code coverage report can be found in `target/site/jacoco/index.html`.
 
+## 🔧 Recent Code Improvements
+
+The codebase has been enhanced with the following improvements for better security, maintainability, and production-readiness:
+
+### Security Enhancements
+- **JWT Secret Externalized**: Moved hardcoded JWT secret to environment variables for better security
+- **Debug Header Removed**: Eliminated production debug headers that exposed sensitive information
+- **Password Protection**: Added `@JsonIgnore` and `@ToString.Exclude` to prevent password exposure in logs/responses
+- **Enhanced Authentication**: Improved JWT filter with proper null checks and exception handling
+
+### Data Validation
+- **Input Validation**: Added Jakarta validation annotations (`@NotBlank`, `@Email`, `@Size`) to all entities
+- **Email Validation**: Enforced proper email format validation for user registration
+
+### Code Quality
+- **Constructor Injection**: Replaced field injection with constructor injection across all services for better testability
+- **Custom Exceptions**: Created `EmailSendException` for more specific error handling
+- **Consistent Logging**: Replaced `System.out` with SLF4J logger throughout the codebase
+- **Null Safety**: Added null checks in critical service methods to prevent NullPointerExceptions
+
+### Performance & Reliability
+- **Custom Repository Methods**: Added query methods for date-based and sentiment-based filtering
+- **Error Handling**: Implemented comprehensive try-catch blocks in WeatherService and RedisService
+- **Redis Null Checks**: Added null validation before cache deserialization to prevent errors
+
+### Architecture
+- **Repository Annotations**: Added `@Repository` to custom repository implementations
+- **Code Cleanup**: Removed legacy test files (Y_*, Z_* prefixed classes)
+- **Health Monitoring**: Added `/actuator/health` endpoint to monitor MongoDB and Redis connectivity
+
+### Configuration
+- **Configuration Template**: Created `application.properties.example` for easy environment setup
+- **Configurable JWT**: Made JWT expiration time configurable via properties
+
 ## 📄 API Endpoints
 
 The API is structured into public, user-specific, journal, and admin routes. Access to user and journal routes requires authentication.
