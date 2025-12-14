@@ -16,14 +16,13 @@ import java.util.Optional;
 public class UserService {
 
     @Autowired
-    private UserRepository userRepository;   // here spring automatically feeds the interface's implementation
+    private UserRepository userRepository; // here spring automatically feeds the interface's implementation
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
-    public boolean saveNewUser(User user){
-        try{
+    public boolean saveNewUser(User user) {
+        try {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setRoles(List.of("USER"));
             userRepository.save(user);
@@ -34,30 +33,35 @@ public class UserService {
         }
     }
 
-    public void saveAdmin(User user){
+    public void saveAdmin(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(List.of("ADMIN"));
         userRepository.save(user);
     }
 
-    public void saveUser(User user){
+    public void saveUser(User user) {
         userRepository.save(user);
     }
 
-    public List<User> getAll(){
+    public List<User> getAll() {
         return userRepository.findAll();
     }
 
-    public Optional<User> findById(ObjectId id){
+    public Optional<User> findById(ObjectId id) {
         return userRepository.findById(id);
     }
 
-    public void deleteById(ObjectId id){
+    public void deleteById(ObjectId id) {
         userRepository.deleteById(id);
     }
 
-    public User findByUserName(String username){
-        return userRepository.findByUserName(username);
+    public User findByUserName(String username) {
+        User user = userRepository.findByUserName(username);
+        if (user == null) {
+            throw new org.springframework.security.core.userdetails.UsernameNotFoundException(
+                    "User not found: " + username);
+        }
+        return user;
     }
 
 }
