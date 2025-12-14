@@ -3,8 +3,8 @@ package com.developmentprep.journalApp.service;
 import com.developmentprep.journalApp.api.response.WeatherResponse;
 import com.developmentprep.journalApp.cache.AppCache;
 import com.developmentprep.journalApp.constants.Placeholders;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -13,18 +13,14 @@ import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class WeatherService {
     @Value("${weather.api.key}")
     private String apiKey;
 
-    @Autowired
-    private RestTemplate restTemplate;
-
-    @Autowired
-    private AppCache appCache;
-
-    @Autowired
-    private RedisService redisService;
+    private final RestTemplate restTemplate;
+    private final AppCache appCache;
+    private final RedisService redisService;
 
     public WeatherResponse getWeather(String city) {
         WeatherResponse weatherResponse = redisService.get("weather_of_" + city, WeatherResponse.class);

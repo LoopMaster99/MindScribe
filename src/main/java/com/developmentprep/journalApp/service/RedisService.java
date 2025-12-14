@@ -1,8 +1,8 @@
 package com.developmentprep.journalApp.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -10,10 +10,10 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class RedisService {
 
-    @Autowired
-    private RedisTemplate redisTemplate;
+    private final RedisTemplate redisTemplate;
 
     public <T> T get(String key, Class<T> entityClass) {
         try {

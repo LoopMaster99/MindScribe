@@ -3,9 +3,9 @@ package com.developmentprep.journalApp.service;
 import com.developmentprep.journalApp.entity.JournalEntry;
 import com.developmentprep.journalApp.entity.User;
 import com.developmentprep.journalApp.repository.JournalEntryRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,14 +15,13 @@ import java.util.Optional;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class JournalEntryService {
 
-    @Autowired
-    private JournalEntryRepository journalEntryRepository; // here spring automatically feeds the interface's
-                                                           // implementation
+    private final JournalEntryRepository journalEntryRepository; // here spring automatically feeds the interface's
+    // implementation
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     @Transactional
     public void saveEntry(JournalEntry journalEntry, String username) {

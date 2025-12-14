@@ -1,18 +1,18 @@
 package com.developmentprep.journalApp.service;
 
 import com.developmentprep.journalApp.exception.EmailSendException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class EmailService {
 
-    @Autowired
-    private JavaMailSender javaMailSender;
+    private final JavaMailSender javaMailSender;
 
     public void sendMail(String to, String subject, String body) {
         try {

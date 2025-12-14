@@ -2,9 +2,9 @@ package com.developmentprep.journalApp.service;
 
 import com.developmentprep.journalApp.entity.User;
 import com.developmentprep.journalApp.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -13,13 +13,11 @@ import java.util.Optional;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository; // here spring automatically feeds the interface's implementation
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public boolean saveNewUser(User user) {
         try {
