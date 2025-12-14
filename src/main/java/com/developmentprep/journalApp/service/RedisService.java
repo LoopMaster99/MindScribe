@@ -11,27 +11,33 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Slf4j
 public class RedisService {
-    
+
     @Autowired
     private RedisTemplate redisTemplate;
-    
-    public <T> T get(String key, Class<T> entityClass){
+
+    public <T> T get(String key, Class<T> entityClass) {
         try {
             Object o = redisTemplate.opsForValue().get(key);
+            if (o == null) {
+                log.debug("Cache miss for key: {}", key);
+                return null;
+            }
+
             ObjectMapper mapper = new ObjectMapper();
             return mapper.readValue(o.toString(), entityClass);
-        }catch (Exception e){
-            log.error("Exception ", e);
+        } catch (Exception e) {
+            log.error("Failed to deserialize cached value for key: {}", key, e);
+            redisTemplate.delete(key);
             return null;
         }
     }
 
-    public void set(String key, Object o, Long ttl){
+    public void set(String key, Object o, Long ttl) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             String jsonValue = mapper.writeValueAsString(o);
             redisTemplate.opsForValue().set(key, jsonValue, ttl, TimeUnit.SECONDS);
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("Exception ", e);
         }
     }
