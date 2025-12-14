@@ -1,10 +1,12 @@
 package com.developmentprep.journalApp.utils;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,9 +14,17 @@ import java.util.Map;
 @Component
 public class JwtUtil {
 
+    @Value("${jwt.secret}")
+    private String secretKey;
+
+    @Value("${jwt.expiration:3600000}") // Default 1 hour
+    private long jwtExpiration;
+
     private SecretKey getSigningKey() {
-        String SECRET_KEY = "TaK+HaV^uvCHEFsEVfypW#7g9^k*Z8$V";
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+        if (secretKey == null || secretKey.length() < 32) {
+            throw new IllegalStateException("JWT secret key must be at least 32 characters");
+        }
+        return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
     public String extractUsername(String token) {
@@ -47,10 +57,10 @@ public class JwtUtil {
         return Jwts.builder()
                 .claims(claims)
                 .subject(subject)
-                .header().empty().add("typ","JWT")
+                .header().empty().add("typ", "JWT")
                 .and()
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 50)) // 5 minutes expiration time
+                .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(getSigningKey())
                 .compact();
     }
@@ -58,6 +68,5 @@ public class JwtUtil {
     public Boolean validateToken(String token) {
         return !isTokenExpired(token);
     }
-
 
 }
