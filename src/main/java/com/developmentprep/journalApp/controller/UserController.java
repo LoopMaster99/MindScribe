@@ -1,7 +1,9 @@
 package com.developmentprep.journalApp.controller;
 
 import com.developmentprep.journalApp.api.response.WeatherResponse;
+import com.developmentprep.journalApp.dto.EmailRequest;
 import com.developmentprep.journalApp.entity.User;
+import com.developmentprep.journalApp.service.EmailService;
 import com.developmentprep.journalApp.service.UserService;
 import com.developmentprep.journalApp.service.WeatherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,28 @@ public class UserController {
 
     @Autowired
     private WeatherService weatherService;
+
+    @Autowired
+    private EmailService emailService;
+
+    @PostMapping("/send-email")
+    public ResponseEntity<?> sendEmail(@Valid @RequestBody EmailRequest emailRequest) {
+        try {
+            // Get authenticated user's email for Reply-To
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+            User user = userService.findByUserName(username);
+
+            // Send email with user's email as Reply-To
+            emailService.sendMail(user.getEmail(), emailRequest.getTo(),
+                    emailRequest.getSubject(), emailRequest.getBody());
+
+            return new ResponseEntity<>("Email sent successfully to " + emailRequest.getTo(), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed to send email: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @PutMapping
     public ResponseEntity<?> updateUser(@Valid @RequestBody User user) {
