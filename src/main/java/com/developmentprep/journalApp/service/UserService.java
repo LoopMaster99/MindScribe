@@ -1,5 +1,6 @@
 package com.developmentprep.journalApp.service;
 
+import com.developmentprep.journalApp.dto.UserDTO;
 import com.developmentprep.journalApp.entity.JournalEntry;
 import com.developmentprep.journalApp.entity.User;
 import com.developmentprep.journalApp.repository.JournalEntryRepository;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -44,8 +46,24 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public List<User> getAll() {
+    public List<User> getAllUserWithEntry() {
         return userRepository.findAll();
+    }
+
+    public List<UserDTO> getAllUser() {
+        return userRepository.findAll().stream()
+                .map(user -> giveUserDetailOnly(user))
+                .collect(Collectors.toList());
+    }
+
+    private UserDTO giveUserDetailOnly(User user) {
+        return UserDTO.builder()
+                .id(user.getId())
+                .userName(user.getUserName())
+                .email(user.getEmail())
+                .sentimentAnalysis(user.isSentimentAnalysis())
+                .roles(user.getRoles())
+                .build();
     }
 
     public Optional<User> findById(ObjectId id) {
