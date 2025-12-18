@@ -1,6 +1,6 @@
 package com.developmentprep.journalApp.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -37,7 +37,7 @@ public class User {
     @NonNull
     @NotBlank(message = "Password cannot be blank")
     @ToString.Exclude
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @DBRef

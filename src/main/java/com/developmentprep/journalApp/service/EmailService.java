@@ -1,6 +1,5 @@
 package com.developmentprep.journalApp.service;
 
-import com.developmentprep.journalApp.exception.EmailSendException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
@@ -23,7 +22,6 @@ public class EmailService {
             javaMailSender.send(mail);
         } catch (Exception e) {
             log.error("Failed to send email to: {}", to, e);
-            throw new EmailSendException("Failed to send email to: " + to, e);
         }
     }
 }

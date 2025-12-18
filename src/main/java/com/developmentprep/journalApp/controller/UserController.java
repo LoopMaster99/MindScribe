@@ -2,7 +2,6 @@ package com.developmentprep.journalApp.controller;
 
 import com.developmentprep.journalApp.api.response.WeatherResponse;
 import com.developmentprep.journalApp.entity.User;
-import com.developmentprep.journalApp.repository.UserRepository;
 import com.developmentprep.journalApp.service.UserService;
 import com.developmentprep.journalApp.service.WeatherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,41 +20,48 @@ public class UserController {
     private UserService userService;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private WeatherService weatherService;
 
-     @PutMapping
-     public ResponseEntity<?> updateUser(@RequestBody User user){
-         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    @PutMapping
+    public ResponseEntity<?> updateUser(@Valid @RequestBody User user) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-         String username = authentication.getName();
-         User userInDb = userService.findByUserName(username);
+        String username = authentication.getName();
+        User userInDb = userService.findByUserName(username);
 
-         userInDb.setUserName(user.getUserName());
-         userInDb.setPassword(user.getPassword());
-         userService.saveNewUser(userInDb);
+        // Only update email, password, and sentimentAnalysis - NOT username (to avoid
+        // breaking JWT auth)
+        if (user.getEmail() != null && !user.getEmail().isEmpty()) {
+            userInDb.setEmail(user.getEmail());
+        }
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            userInDb.setPassword(user.getPassword());
+        }
+        userInDb.setSentimentAnalysis(user.isSentimentAnalysis());
 
-         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-     }
+        userService.saveNewUser(userInDb);
 
-     @DeleteMapping
-     public ResponseEntity<?> deleteByUserName(){
-         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-         userRepository.deleteByUserName(authentication.getName());
-         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-     }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
-     @GetMapping
-     public ResponseEntity<?> greeting(){
-         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-         WeatherResponse weatherResponse = weatherService.getWeather("Noida");
-         String greeting = "";
-         if(weatherResponse != null){
-             greeting = ", Weather feels like " + weatherResponse.getCurrent().getFeelslike();
-         }
-         return new ResponseEntity<>("Hi " + authentication.getName() + greeting, HttpStatus.OK);
-     }
+    @DeleteMapping
+    public ResponseEntity<?> deleteByUserName() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        userService.deleteUserAndEntries(authentication.getName());
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/{city}")
+    public ResponseEntity<?> getWelcomeMessage(@PathVariable String city) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        WeatherResponse weatherResponse = weatherService.getWeather(city);
+        String weatherInfo = "";
+        if (weatherResponse != null) {
+            weatherInfo = " The weather in " + city + " feels like " + weatherResponse.getCurrent().getFeelslike()
+                    + "°C.";
+        }
+        return new ResponseEntity<>("Welcome back, " + username + "!" + weatherInfo, HttpStatus.OK);
+    }
 
 }

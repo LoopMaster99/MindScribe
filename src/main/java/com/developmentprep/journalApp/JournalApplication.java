@@ -22,13 +22,13 @@ public class JournalApplication {
 
 	@Bean
 	@Profile("!test")
-	public PlatformTransactionManager work(MongoDatabaseFactory dbFactory){
+	public PlatformTransactionManager work(MongoDatabaseFactory dbFactory) {
 		return new MongoTransactionManager(dbFactory);
 	}
 
 	@Bean
 	@Profile("!test")
-	public RestTemplate restTemplate(){
+	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
 

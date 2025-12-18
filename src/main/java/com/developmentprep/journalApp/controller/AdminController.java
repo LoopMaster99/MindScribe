@@ -6,6 +6,7 @@ import com.developmentprep.journalApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,12 +31,12 @@ public class AdminController {
     }
 
     @PostMapping("/create-admin-user")
-    public void createUser(@RequestBody User user){
+    public void createUser(@Valid @RequestBody User user) {
         userService.saveAdmin(user);
     }
 
-    @GetMapping("clear-app-cache")
-    public void clearAppCache(){
+    @PostMapping("/clear-app-cache")
+    public void clearAppCache() {
         appCache.init();
     }
 }

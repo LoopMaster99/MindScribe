@@ -1,6 +1,8 @@
 package com.developmentprep.journalApp.service;
 
+import com.developmentprep.journalApp.entity.JournalEntry;
 import com.developmentprep.journalApp.entity.User;
+import com.developmentprep.journalApp.repository.JournalEntryRepository;
 import com.developmentprep.journalApp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JournalEntryRepository journalEntryRepository;
 
     public boolean saveNewUser(User user) {
         try {
@@ -60,6 +63,19 @@ public class UserService {
                     "User not found: " + username);
         }
         return user;
+    }
+
+    public void deleteUserAndEntries(String username) {
+        User user = findByUserName(username);
+
+        // Delete all user's journal entries first
+        for (JournalEntry entry : user.getJournalEntries()) {
+            journalEntryRepository.deleteById(entry.getId());
+        }
+
+        // Then delete user
+        userRepository.deleteByUserName(username);
+        log.info("User {} and all their journal entries deleted successfully", username);
     }
 
 }
