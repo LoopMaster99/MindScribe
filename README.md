@@ -82,8 +82,6 @@ graph TB
     
     style sb fill:#0f172a,stroke:#334155,stroke-width:2px,color:#cbd5e1
     style ext fill:#0f172a,stroke:#334155,stroke-width:2px,color:#cbd5e1
-    
-    linkStyle default stroke:#cbd5e1,stroke-width:1px,color:#cbd5e1;
 ```
 
 **Key Components:**
