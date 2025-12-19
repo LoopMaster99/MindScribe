@@ -37,19 +37,10 @@ MindScribe helps understand core backend fundamentals including JWT authenticati
 graph TB
     %% --- Dark Mode Palette & Class Definitions ---
 
-    %% Internal Spring Boot: Deep Slate Blue background, Light Blue Border, White Text
     classDef internal fill:#1e293b,stroke:#60a5fa,stroke-width:1px,color:#f1f5f9,rx:5,ry:5;
-
-    %% Databases: Dark Green background, Emerald Border, Mint Text
     classDef database fill:#064e3b,stroke:#34d399,stroke-width:1px,color:#d1fae5,rx:5,ry:5;
-
-    %% External APIs: Deep Purple background, Lavender Border, Light Purple Text
     classDef external fill:#4c1d95,stroke:#a78bfa,stroke-width:1px,color:#e9d5ff,rx:15,ry:15;
-
-    %% Queue: Dark Grey background, Slate Border, White Text
     classDef queue fill:#374151,stroke:#94a3b8,stroke-width:1px,color:#f8fafc;
-
-    %% Client: Dark Brown/Amber background, Yellow Border, Light Yellow Text
     classDef client fill:#451a03,stroke:#fbbf24,stroke-width:2px,color:#fef3c7,rx:10,ry:10;
 
     %% --- Nodes ---
@@ -87,13 +78,11 @@ graph TB
     Scheduler -->|Weekly Analysis Job| Kafka
     Kafka -->|Consume Topic| Email
 
-    %% --- Container Styles (Dark Backgrounds) ---
-    %% This sets the box backgrounds to dark blue/grey
+    %% --- Styling ---
+    
     style sb fill:#0f172a,stroke:#334155,stroke-width:2px,color:#cbd5e1
     style ext fill:#0f172a,stroke:#334155,stroke-width:2px,color:#cbd5e1
     
-    %% --- Link Styles (CRITICAL FOR DARK MODE) ---
-    %% This forces the arrows to be light grey instead of black
     linkStyle default stroke:#cbd5e1,stroke-width:1px,color:#cbd5e1;
 ```
 
