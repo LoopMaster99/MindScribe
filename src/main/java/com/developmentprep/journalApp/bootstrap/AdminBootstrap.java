@@ -32,6 +32,7 @@ public class AdminBootstrap implements ApplicationRunner {
             admin.setUserName("admin");
             admin.setEmail("admin@journalapp.com");
             admin.setPassword("admin123"); // Will be encrypted by saveAdmin
+            admin.setRoles(List.of("ADMIN"));
             admin.setSentimentAnalysis(false);
 
             userService.saveAdmin(admin);
