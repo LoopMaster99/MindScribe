@@ -1,0 +1,67 @@
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
+
+weather:
+  api:
+    key: ${WEATHER_API_KEY}
+
+sendgrid:
+  api-key: ${SENDGRID_API_KEY}
+  from-email: ${SENDGRID_FROM_EMAIL}
+  from-name: ${SENDGRID_FROM_NAME}
+
+spring:
+  application:
+    name: Journal App
+
+  data:
+    redis:
+      url: ${REDIS_URL}
+      timeout: 60000
+
+    mongodb:
+      uri: ${MONGODB_URI}
+      database: ${MONGODB_DATABASE}
+      auto-index-creation: true
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+    consumer:
+      group-id: ${KAFKA_CONSUMER_GROUP}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: com.developmentprep.journalApp.model
+        value:
+          default:
+            type: com.developmentprep.journalApp.model.SentimentData
+
+    properties:
+      security:
+        protocol: SASL_SSL
+      sasl:
+        mechanism: PLAIN
+        jaas:
+          config: ${KAFKA_JAAS_CONFIG}
+      session:
+        timeout:
+          ms: 45000
+
+server:
+  port: 8080
+  servlet:
+    context-path: /journal
+
+logging:
+  level:
+    org.springframework.data.redis: INFO
+    io.lettuce.core: INFO
