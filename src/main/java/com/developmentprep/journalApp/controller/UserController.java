@@ -74,7 +74,15 @@ public class UserController {
     @DeleteMapping
     public ResponseEntity<?> deleteByUserName() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        userService.deleteUserAndEntries(authentication.getName());
+        String username = authentication.getName();
+
+        // Prevent admin users from deleting their accounts
+        User user = userService.findByUserName(username);
+        if (user.getRoles() != null && user.getRoles().contains("ADMIN")) {
+            return new ResponseEntity<>("Admin users cannot delete their accounts", HttpStatus.FORBIDDEN);
+        }
+
+        userService.deleteUserAndEntries(username);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
