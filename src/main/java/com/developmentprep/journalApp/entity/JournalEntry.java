@@ -1,6 +1,8 @@
 package com.developmentprep.journalApp.entity;
 
 import com.developmentprep.journalApp.enums.Sentiment;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -15,6 +17,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class JournalEntry {
     @Id
+    @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId id;
 
     @NotBlank(message = "Title cannot be blank")
