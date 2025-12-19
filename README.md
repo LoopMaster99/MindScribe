@@ -4,7 +4,7 @@
 
 ## 💭 Why I Built This
 
-MindScribe demonstrates production-ready backend development with enterprise-grade security (JWT, RBAC), scalable architecture (MongoDB, Redis), and real-world integrations (weather APIs, email). This portfolio project showcases my ability to build secure, well-documented systems ready for deployment.
+MindScribe helps understand core backend fundamentals including JWT authentication, role-based access control, MongoDB and Redis integration, and real-world API integrations for weather and email services.
 
 ## 🌐 Live Demo
 
