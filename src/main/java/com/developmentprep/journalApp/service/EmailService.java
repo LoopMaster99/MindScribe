@@ -21,25 +21,10 @@ public class EmailService {
 
     private final SendGridConfig sendGridConfig;
 
-    /**
-     * Send email using SendGrid API
-     * 
-     * @param to      Recipient email address
-     * @param subject Email subject
-     * @param body    Email body (plain text)
-     */
     public void sendMail(String to, String subject, String body) {
         sendMail(null, to, subject, body);
     }
 
-    /**
-     * Send email using SendGrid API with custom reply-to
-     * 
-     * @param replyTo Reply-to email address (optional)
-     * @param to      Recipient email address
-     * @param subject Email subject
-     * @param body    Email body (plain text)
-     */
     public void sendMail(String replyTo, String to, String subject, String body) {
         try {
             Email from = new Email(sendGridConfig.getFromEmail(), sendGridConfig.getFromName());

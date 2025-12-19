@@ -4,9 +4,6 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * SendGrid configuration properties
- */
 @Configuration
 @ConfigurationProperties(prefix = "sendgrid")
 @Data

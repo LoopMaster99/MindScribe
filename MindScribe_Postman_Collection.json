@@ -1,0 +1,524 @@
+{
+    "info": {
+        "_postman_id": "mindscribe-api-collection",
+        "name": "MindScribe API",
+        "description": "Complete API collection for MindScribe - A secure journaling application built with Spring Boot, MongoDB, and JWT authentication.\n\n**Live API:** https://mind-scribe.onrender.com\n\n**Note:** The app is hosted on Render's free tier and may take 30-60 seconds to wake up after periods of inactivity.\n\n**How to use:**\n1. Test the health check endpoint first to wake up the app\n2. Create a user via signup\n3. Login to get your JWT token\n4. The token will be automatically saved to the environment variable\n5. Use authenticated endpoints with the saved token\n\n**Author:** Krishna Bansal\n**GitHub:** https://github.com/LoopMaster99/MindScribe",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Public Endpoints",
+            "item": [
+                {
+                    "name": "Health Check",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{BASE_URL}}/public/health-check",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "public",
+                                "health-check"
+                            ]
+                        },
+                        "description": "Simple health check endpoint to verify the API is running.\n\n**Note:** Use this first to wake up the app if it's sleeping (Render free tier)."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "User Signup",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "// Test if signup was successful",
+                                    "pm.test(\"User created successfully\", function () {",
+                                    "    pm.response.to.have.status(201);",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"userName\": \"johndoe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/public/signup",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "public",
+                                "signup"
+                            ]
+                        },
+                        "description": "Register a new user account.\n\n**Request Body:**\n- `userName`: Unique username (required)\n- `email`: Valid email address (required)\n- `password`: Password (required)\n\n**Response:** 201 Created"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "User Login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "// Save JWT token to environment variable",
+                                    "if (pm.response.code === 200) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    pm.environment.set(\"JWT_TOKEN\", jsonData.token);",
+                                    "    pm.test(\"JWT token saved\", function () {",
+                                    "        pm.expect(jsonData.token).to.be.a('string');",
+                                    "    });",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"userName\": \"johndoe\",\n  \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/public/login",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "public",
+                                "login"
+                            ]
+                        },
+                        "description": "Login with username and password to receive JWT token.\n\n**Request Body:**\n- `userName`: Your username\n- `password`: Your password\n\n**Response:**\n```json\n{\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n}\n```\n\n**Note:** The JWT token is automatically saved to the environment variable `JWT_TOKEN` for use in authenticated requests."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Public endpoints that don't require authentication."
+        },
+        {
+            "name": "User Management",
+            "item": [
+                {
+                    "name": "Get User Profile",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{JWT_TOKEN}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/user",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "user"
+                            ]
+                        },
+                        "description": "Get authenticated user's profile with weather greeting.\n\n**Authentication:** Required (JWT token)\n\n**Response:**\n```json\n{\n  \"message\": \"Hi johndoe, Weather feels like 25°C\"\n}\n```"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update User Profile",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{JWT_TOKEN}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"userName\": \"johndoe\",\n  \"email\": \"newemail@example.com\",\n  \"password\": \"newpassword123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/user",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "user"
+                            ]
+                        },
+                        "description": "Update authenticated user's profile information.\n\n**Authentication:** Required (JWT token)\n\n**Request Body:**\n- `userName`: New username (optional)\n- `email`: New email (optional)\n- `password`: New password (optional)"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete User Account",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{JWT_TOKEN}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/user",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "user"
+                            ]
+                        },
+                        "description": "Delete authenticated user's account and all associated journal entries.\n\n**Authentication:** Required (JWT token)\n\n**Warning:** This action is irreversible!"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Send Email",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{JWT_TOKEN}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"to\": \"recipient@example.com\",\n  \"subject\": \"Test Email\",\n  \"body\": \"This is a test email from MindScribe API\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/user/send-email",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "user",
+                                "send-email"
+                            ]
+                        },
+                        "description": "Send an email via the API.\n\n**Authentication:** Required (JWT token)\n\n**Request Body:**\n- `to`: Recipient email address\n- `subject`: Email subject\n- `body`: Email body content"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "User management endpoints requiring authentication."
+        },
+        {
+            "name": "Journal Entries",
+            "item": [
+                {
+                    "name": "Get All Journal Entries",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{JWT_TOKEN}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ]
+                        },
+                        "description": "Get all journal entries for the authenticated user.\n\n**Authentication:** Required (JWT token)\n\n**Response:**\n```json\n[\n  {\n    \"id\": \"...\",\n    \"title\": \"My First Entry\",\n    \"content\": \"Today was great!\",\n    \"sentiment\": \"HAPPY\",\n    \"date\": \"2025-12-19T05:30:00\"\n  }\n]\n```"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Journal Entry",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "// Save the created entry ID for future requests",
+                                    "if (pm.response.code === 201) {",
+                                    "    var jsonData = pm.response.json();",
+                                    "    if (jsonData.id) {",
+                                    "        pm.environment.set(\"JOURNAL_ENTRY_ID\", jsonData.id);",
+                                    "    }",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{JWT_TOKEN}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"title\": \"My First Journal Entry\",\n  \"content\": \"Today I successfully deployed my Spring Boot app to Render! Feeling excited about this achievement.\",\n  \"sentiment\": \"EXCITED\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ]
+                        },
+                        "description": "Create a new journal entry.\n\n**Authentication:** Required (JWT token)\n\n**Request Body:**\n- `title`: Entry title (required)\n- `content`: Entry content (required)\n- `sentiment`: Emotional sentiment (optional)\n  - Valid values: `HAPPY`, `SAD`, `EXCITED`, `ANGRY`, `NEUTRAL`, `ANXIOUS`, `GRATEFUL`\n\n**Note:** The created entry ID is automatically saved to `JOURNAL_ENTRY_ID` environment variable."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get Journal Entry by ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{JWT_TOKEN}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/id/{{JOURNAL_ENTRY_ID}}",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "id",
+                                "{{JOURNAL_ENTRY_ID}}"
+                            ]
+                        },
+                        "description": "Get a specific journal entry by ID.\n\n**Authentication:** Required (JWT token)\n\n**Path Parameter:**\n- `id`: Journal entry ID\n\n**Note:** Uses the `JOURNAL_ENTRY_ID` saved from the create request. Replace with actual ID if needed."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Journal Entry",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{JWT_TOKEN}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"title\": \"Updated Journal Entry\",\n  \"content\": \"I updated my journal entry with new insights and reflections.\",\n  \"sentiment\": \"GRATEFUL\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/id/{{JOURNAL_ENTRY_ID}}",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "id",
+                                "{{JOURNAL_ENTRY_ID}}"
+                            ]
+                        },
+                        "description": "Update an existing journal entry.\n\n**Authentication:** Required (JWT token)\n\n**Path Parameter:**\n- `id`: Journal entry ID\n\n**Request Body:**\n- `title`: Updated title\n- `content`: Updated content\n- `sentiment`: Updated sentiment"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Journal Entry",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{JWT_TOKEN}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/id/{{JOURNAL_ENTRY_ID}}",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "id",
+                                "{{JOURNAL_ENTRY_ID}}"
+                            ]
+                        },
+                        "description": "Delete a journal entry by ID.\n\n**Authentication:** Required (JWT token)\n\n**Path Parameter:**\n- `id`: Journal entry ID\n\n**Warning:** This action is irreversible!"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Journal entry CRUD operations requiring authentication."
+        },
+        {
+            "name": "Admin Endpoints",
+            "item": [
+                {
+                    "name": "Get All Users",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{JWT_TOKEN}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{BASE_URL}}/admin/all-users",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "all-users"
+                            ]
+                        },
+                        "description": "Get list of all users in the system.\n\n**Authentication:** Required (JWT token with ADMIN role)\n\n**Note:** Only users with ADMIN role can access this endpoint."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Create Admin User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{JWT_TOKEN}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"userName\": \"adminuser\",\n  \"email\": \"admin@example.com\",\n  \"password\": \"adminpass123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{BASE_URL}}/admin/create-admin-user",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "create-admin-user"
+                            ]
+                        },
+                        "description": "Create a new user with ADMIN role.\n\n**Authentication:** Required (JWT token with ADMIN role)\n\n**Request Body:**\n- `userName`: Admin username\n- `email`: Admin email\n- `password`: Admin password"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Admin-only endpoints requiring ADMIN role."
+        },
+        {
+            "name": "Health & Monitoring",
+            "item": [
+                {
+                    "name": "Actuator Health Check",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{BASE_URL}}/actuator/health",
+                            "host": [
+                                "{{BASE_URL}}"
+                            ],
+                            "path": [
+                                "actuator",
+                                "health"
+                            ]
+                        },
+                        "description": "Spring Boot Actuator health endpoint showing MongoDB and Redis connectivity status.\n\n**Response:**\n```json\n{\n  \"status\": \"UP\",\n  \"components\": {\n    \"mongo\": {\n      \"status\": \"UP\"\n    }\n  }\n}\n```"
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Health monitoring and system status endpoints."
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    ""
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    ""
+                ]
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "BASE_URL",
+            "value": "https://mind-scribe.onrender.com/journal",
+            "type": "string"
+        },
+        {
+            "key": "JWT_TOKEN",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "JOURNAL_ENTRY_ID",
+            "value": "",
+            "type": "string"
+        }
+    ]
+}
