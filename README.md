@@ -277,6 +277,6 @@ This project is open source and available under the MIT License.
 **Built with ❤️ by Krishna Bansal**
 
 [![GitHub](https://img.shields.io/badge/GitHub-LoopMaster99-181717?style=flat&logo=github)](https://github.com/LoopMaster99)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Krishna_Bansal-0077B5?style=flat&logo=linkedin)](https://linkedin.com/in/krishna-bansal)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Krishna_Bansal-0077B5?style=flat&logo=linkedin)](https://www.linkedin.com/in/krishna-bansal-8a2323272/)
 
 </div>
