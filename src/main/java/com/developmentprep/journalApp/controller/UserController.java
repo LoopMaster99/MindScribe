@@ -27,6 +27,9 @@ public class UserController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
     @PostMapping("/send-email")
     public ResponseEntity<?> sendEmail(@Valid @RequestBody EmailRequest emailRequest) {
         try {
@@ -54,16 +57,16 @@ public class UserController {
         User userInDb = userService.findByUserName(username);
 
         // Only update email, password, and sentimentAnalysis - NOT username (to avoid
-        // breaking JWT auth)
+        // breaking JWT auth) and NOT roles (to preserve ADMIN/USER status)
         if (user.getEmail() != null && !user.getEmail().isEmpty()) {
             userInDb.setEmail(user.getEmail());
         }
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-            userInDb.setPassword(user.getPassword());
+            userInDb.setPassword(passwordEncoder.encode(user.getPassword()));
         }
         userInDb.setSentimentAnalysis(user.isSentimentAnalysis());
 
-        userService.saveNewUser(userInDb);
+        userService.saveUser(userInDb);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
