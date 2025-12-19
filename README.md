@@ -35,39 +35,46 @@ MindScribe helps understand core backend fundamentals including JWT authenticati
 
 ```mermaid
 graph TB
-    Client[Client/Postman]
-    
-    subgraph "Spring Boot Application"
-        Controller[Controllers]
-        Filter[JWT Filter]
-        Service[Services]
-        Repository[Repositories]
-        Scheduler[Schedulers]
+    %% --- Configuration and Class Definitions ---
+    classDef internal fill:#e3f2fd,stroke:#bbdefb,stroke-width:1px,color:#0d47a1,rx:5,ry:5;
+    classDef database fill:#e8f5e9,stroke:#c8e6c9,stroke-width:1px,color:#1b5e20,rx:5,ry:5;
+    classDef external fill:#f3e5f5,stroke:#e1bee7,stroke-width:1px,color:#4a148c,rx:15,ry:15;
+    classDef queue fill:#cfd8dc,stroke:#b0bec5,stroke-width:1px,color:#263238;
+    classDef client fill:#fffbe7,stroke:#fff176,stroke-width:2px,color:#f57f17,rx:10,ry:10;
+
+    Client[Client / Postman]:::client
+   
+    subgraph sb ["Spring Boot Application"]
+        direction TB
+        Controller[Controllers]:::internal
+        Filter[JWT Filter]:::internal
+        Service[Services]:::internal
+        Repository[Repositories]:::internal
+        Scheduler[Schedulers]:::internal
     end
-    
-    subgraph "External Services"
-        MongoDB[(MongoDB Atlas)]
-        Redis[(Redis Cache)]
-        Kafka[Kafka Queue]
-        Weather[Weather API]
-        Email[Email Service]
+   
+    subgraph ext ["External Services"]
+        direction TB
+        MongoDB[(MongoDB Atlas)]:::database
+        Redis[(Redis Cache)]:::database
+        Kafka{{Kafka Queue}}:::queue
+        Weather(Weather API):::external
+        Email(Email Service):::external
     end
-    
-    Client -->|HTTP Request| Controller
-    Controller -->|JWT Validation| Filter
-    Filter -->|Authenticated| Service
+
+    Client -->|1. HTTP Request| Controller
+    Controller -.->|2. JWT Validation| Filter
+    Filter -->|3. Authenticated| Service
     Service --> Repository
     Repository --> MongoDB
     Service --> Redis
     Service --> Weather
     Service --> Email
-    Scheduler -->|Weekly Analysis| Kafka
-    Kafka -->|Consume| Email
-    
-    style Client fill:#e1f5ff
-    style MongoDB fill:#4caf50
-    style Redis fill:#ff6b6b
-    style Kafka fill:#000000,color:#fff
+    Scheduler -->|Weekly Analysis Job| Kafka
+    Kafka -->|Consume Topic| Email
+   
+    style sb fill:#f8fdff,stroke:#d6eaf8,stroke-width:2px,color:#546e7a
+    style ext fill:#fbfefb,stroke:#e1efdc,stroke-width:2px,color:#546e7a
 ```
 
 **Key Components:**
